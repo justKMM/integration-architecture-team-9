@@ -1,0 +1,10 @@
+# IntelliJ IDEA specific files
+.idea/
+
+# Maven / Gradle specific files
+target/
+out/
+build/
+
+# Generated files
+generated/
