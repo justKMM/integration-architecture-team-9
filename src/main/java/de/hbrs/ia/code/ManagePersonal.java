@@ -20,5 +20,17 @@ public interface ManagePersonal {
 
     public List<SocialPerformanceRecord> readSocialPerformanceRecord( SalesMan salesMan );
     // Remark: How do you integrate the year?
+    // The year will be an attribute of the social performance records
 
+    public SocialPerformanceRecord readSocialPerformanceRecord( SalesMan salesMan, int year );
+
+    // U - Update
+    public void updateSalesMan( int sid, SalesMan newSalesMan );
+
+    public void updateSocialPerformanceRecord( SocialPerformanceRecord newPerformanceRecord, SalesMan SalesMan, int year );
+
+    // D - Delete
+    public void deleteSalesMan( int sid );
+
+    public void deleteSocialPerformanceRecord( int sid, int year );
 }
