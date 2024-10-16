@@ -14,13 +14,14 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class ManagePersonalImpl implements ManagePersonal {
 
+    private MongoClient mongoClient;
     private final MongoDatabase database;
     private final MongoCollection<Document> salesmenCollection;
     private final MongoCollection<Document> socialPerformanceRecordsCollection;
 
     public ManagePersonalImpl() {
         // Connect to the local MongoDB instance
-        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        this.mongoClient = new MongoClient("localhost", 27017);
         this.database = mongoClient.getDatabase("highperformance");
         this.salesmenCollection = this.database.getCollection("salesmen");
         this.socialPerformanceRecordsCollection = this.database.getCollection("socialPerformanceRecords");
@@ -34,7 +35,7 @@ public class ManagePersonalImpl implements ManagePersonal {
     @Override
     public void addSocialPerformanceRecord(SocialPerformanceRecord performanceRecord, SalesMan salesMan) {
         Document performanceRecordDocument = performanceRecord.toDocument();
-        performanceRecordDocument.append("salesManId", salesMan.getId());
+        performanceRecordDocument.append("sid", salesMan.getId());
         socialPerformanceRecordsCollection.insertOne(performanceRecordDocument);
         System.out.println("Social Performance Record added for: " + salesMan.getFirstname());
     }
@@ -81,14 +82,17 @@ public class ManagePersonalImpl implements ManagePersonal {
     @Override
     public void updateSalesMan(int sid, SalesMan newSalesMan) {
         Document salesManDocument = salesmenCollection.find(eq("sid", sid)).first();
-        salesmenCollection.updateOne(salesManDocument, newSalesMan.toDocument());
+        if (salesManDocument != null) {
+            salesmenCollection.replaceOne(salesManDocument, newSalesMan.toDocument());
+        }
+        System.out.println("Can't find salesman in database");
     }
 
     @Override
     public void updateSocialPerformanceRecord(SocialPerformanceRecord newPerformanceRecord, SalesMan salesMan, int year) {
         Document currentSocialPerformanceRecordDocument;
         Document filterCriteria = new Document();
-        filterCriteria.put("salesManId", salesMan.getId());
+        filterCriteria.put("sid", salesMan.getId());
         filterCriteria.append("year", year);
         currentSocialPerformanceRecordDocument = socialPerformanceRecordsCollection.find(filterCriteria).first();
         if (currentSocialPerformanceRecordDocument == null) {
@@ -100,15 +104,25 @@ public class ManagePersonalImpl implements ManagePersonal {
 
     @Override
     public void deleteSalesMan(int sid) {
-        Document currentSalesManDocument = salesmenCollection.find(eq("salesManId", sid)).first();
+        Document currentSalesManDocument = salesmenCollection.find(eq("sid", sid)).first();
         salesmenCollection.deleteOne(currentSalesManDocument);
     }
 
     @Override
     public void deleteSocialPerformanceRecord(int sid, int year) {
         Document filterCriteria = new Document();
-        filterCriteria.put("salesManId", sid);
+        filterCriteria.put("sid", sid);
         filterCriteria.append("year", year);
         Document currentSocialPerformanceRecordDocument = socialPerformanceRecordsCollection.find(filterCriteria).first();
+    }
+
+    @Override
+    public void deleteAllSalesMen() {
+        salesmenCollection.drop();
+    }
+
+    @Override
+    public void deleteAllSocialPerformanceRecord() {
+        socialPerformanceRecordsCollection.drop();
     }
 }

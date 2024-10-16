@@ -38,10 +38,10 @@ public class SalesMan {
     }
 
     public Document toDocument() {
-        org.bson.Document document = new Document();
-        document.append("firstname" , this.firstname );
-        document.append("lastname" , this.lastname );
-        document.append("sid" , this.sid);
+        Document document = new Document();
+        document.put("sid" , this.sid);
+        document.append("firstname" , this.firstname);
+        document.append("lastname" , this.lastname);
         return document;
     }
 }

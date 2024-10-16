@@ -29,7 +29,7 @@ public class SocialPerformanceRecord {
 
     public Document toDocument() {
         Document document = new Document();
-        document.append("feedback", this.feedback);
+        document.put("feedback", this.feedback);
         document.append("year", this.year);
         return document;
     }
