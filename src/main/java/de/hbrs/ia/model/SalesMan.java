@@ -38,10 +38,9 @@ public class SalesMan {
     }
 
     public Document toDocument() {
-        Document document = new Document();
-        document.put("sid" , this.sid);
-        document.append("firstname" , this.firstname);
-        document.append("lastname" , this.lastname);
-        return document;
+        return new Document()
+                .append("sid", this.sid)
+                .append("firstname", this.firstname)
+                .append("lastname", this.lastname);
     }
 }

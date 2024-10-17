@@ -3,20 +3,48 @@ package de.hbrs.ia.model;
 import org.bson.Document;
 
 public class SocialPerformanceRecord {
-    private String feedback;
+    private Integer goalid;
+    private String description;
+    private Integer targetValue;
+    private Integer actualValue;
     private Integer year;
 
-    public SocialPerformanceRecord(String feedback, Integer year) {
-        this.feedback = feedback;
+    public SocialPerformanceRecord(Integer goalid, String descrption, Integer targetValue, Integer actualValue, Integer year) {
+        this.goalid = goalid;
+        this.description = descrption;
+        this.targetValue = targetValue;
+        this.actualValue = actualValue;
         this.year = year;
     }
 
-    public String getFeedback() {
-        return feedback;
+    public Integer getGoalid() {
+        return goalid;
     }
 
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
+    public void setGoalid(Integer goalid) {
+        this.goalid = goalid;
+    }
+
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getTargetValue() {
+        return targetValue;
+    }
+
+    public void setTargetValue(Integer targetValue) {
+        this.targetValue = targetValue;
+    }
+
+    public Integer getActualValue() {
+        return actualValue;
+    }
+
+    public void setActualValue(Integer actualValue) {
+        this.actualValue = actualValue;
     }
 
     public Integer getYear() {
@@ -28,9 +56,11 @@ public class SocialPerformanceRecord {
     }
 
     public Document toDocument() {
-        Document document = new Document();
-        document.put("feedback", this.feedback);
-        document.append("year", this.year);
-        return document;
+        return new Document()
+                .append("goalid", this.goalid)
+                .append("description", this.description)
+                .append("targetValue", this.targetValue)
+                .append("actualValue", this.actualValue)
+                .append("year", this.year);
     }
 }

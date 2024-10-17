@@ -18,12 +18,12 @@ public class Main {
         managePersonal.createSalesMan(salesMan2);
 
         // Add social performance records for salesMan1
-        SocialPerformanceRecord record1 = new SocialPerformanceRecord("Excellent teamwork", 2023);
+        SocialPerformanceRecord record1 = new SocialPerformanceRecord(1, "Leadership Competence", 4, 3, 2024);
         managePersonal.addSocialPerformanceRecord(record1, salesMan1);
 
-        SocialPerformanceRecord record2 = new SocialPerformanceRecord("Good client communication", 2023);
+        SocialPerformanceRecord record2 = new SocialPerformanceRecord(2, "Openness Employee", 4, 2, 2024);
         managePersonal.addSocialPerformanceRecord(record2, salesMan1);
-
+        /*
         // Add social performance record for salesMan2
         SocialPerformanceRecord record3 = new SocialPerformanceRecord("Strong leadership", 2023);
         managePersonal.addSocialPerformanceRecord(record3, salesMan2);
@@ -44,6 +44,6 @@ public class Main {
         System.out.println("\nSocial Performance Records for Salesman ID 101:");
         for (SocialPerformanceRecord sr : socialRecords) {
             System.out.println(sr.getYear() + ": " + sr.getFeedback());
-        }
+        }*/
     }
 }
