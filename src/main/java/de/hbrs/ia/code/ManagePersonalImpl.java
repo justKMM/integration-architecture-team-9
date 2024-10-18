@@ -1,21 +1,23 @@
 package de.hbrs.ia.code;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Updates;
-import de.hbrs.ia.model.SalesMan;
-import de.hbrs.ia.model.SocialPerformanceRecord;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.List;
-
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.Updates;
+
+import de.hbrs.ia.model.SalesMan;
+import de.hbrs.ia.model.SocialPerformanceRecord;
 
 public class ManagePersonalImpl implements ManagePersonal {
 
-    private MongoClient mongoClient;
+    private final MongoClient mongoClient;
     private final MongoDatabase database;
     private final MongoCollection<Document> salesmenCollection;
 
@@ -34,6 +36,10 @@ public class ManagePersonalImpl implements ManagePersonal {
     @Override
     public void addSocialPerformanceRecord(SocialPerformanceRecord performanceRecord, SalesMan salesMan) {
         Document salesManDocument = salesmenCollection.find(eq("sid", salesMan.getId())).first();
+
+        if (salesManDocument == null)
+            throw new IllegalArgumentException();
+
         Bson update = Updates.combine(
                 Updates.addToSet("performancerecords", performanceRecord.toDocument())
         );
@@ -42,52 +48,64 @@ public class ManagePersonalImpl implements ManagePersonal {
 
     @Override
     public SalesMan readSalesMan(int sid) {
-        /*Document salesMan = salesmenCollection.find(eq("sid", sid)).first();
-        if (salesMan != null) {
-            return new SalesMan(salesMan.getString("firstname"), salesMan.getString("lastname"), salesMan.getInteger("sid"));
-        }
-        return null;*/
-        return null;
+        Document salesMan = salesmenCollection.find(eq("sid", sid)).first();
+
+        if (salesMan == null)
+            return null;
+
+        return new SalesMan(
+            salesMan.getString("firstname"),
+            salesMan.getString("lastname"),
+            salesMan.getInteger("sid")
+        );
     }
 
     @Override
     public List<SalesMan> readAllSalesMen() {
-        /*List<SalesMan> salesMen = new ArrayList<>();
-        for (Document salesManDocument : salesmenCollection.find()) {
-            SalesMan salesMan = new SalesMan(salesManDocument.getString("firstname"), salesManDocument.getString("lastname"), salesManDocument.getInteger("sid"));
-            salesMen.add(salesMan);
-        }
-        return salesMen;*/
-        return null;
+        return salesmenCollection
+            .find()
+            .map(
+                d -> new SalesMan(
+                    d.getString("firstname"),
+                    d.getString("lastname"),
+                    d.getInteger("sid")
+                )
+            )
+            .into(new ArrayList<>());
     }
 
     @Override
     public List<SocialPerformanceRecord> readSocialPerformanceRecord(SalesMan salesMan) {
-        /*List<SocialPerformanceRecord> records = new ArrayList<>();
-        for (Document socialPerformanceRecordDocument : socialPerformanceRecordsCollection.find(eq("salesManId", salesMan.getId()))) {
-            SocialPerformanceRecord record = new SocialPerformanceRecord(socialPerformanceRecordDocument.getString("feedback"), socialPerformanceRecordDocument.getInteger("year"));
-            records.add(record);
-        }
-        return records;*/
-        return null;
+        return salesmenCollection
+            .find(eq("sid", salesMan.getId()))
+            .map(d -> d.get("performancerecords"))
+            .map(
+                d -> new SocialPerformanceRecord(
+                    d.getInteger("goaldid"),
+                    d.getString("description"),
+                    d.getInteger("targetValue"),
+                    d.getInteger("actualValue"),
+                    d.getInteger("year")
+                )
+            )
+            .into(new ArrayList<>());
     }
 
     @Override
     public SocialPerformanceRecord readSocialPerformanceRecord(SalesMan salesMan, int year) {
-        /*for (Document socialPerformanceRecordDocument : socialPerformanceRecordsCollection.find(eq("salesManId", salesMan.getId()))) {
-            if (socialPerformanceRecordDocument.getInteger("year") == year) {
-                return new SocialPerformanceRecord(socialPerformanceRecordDocument.getString("feedback"), socialPerformanceRecordDocument.getInteger("year"));
-            }
-        }*/
-        return null;
+        return readSocialPerformanceRecord(salesMan)
+            .stream()
+            .filter(r -> r.getYear() == year)
+            .findFirst()
+            .get();
     }
 
     @Override
     public void updateSalesMan(int sid, SalesMan newSalesMan) {
-        /*Document salesManDocument = salesmenCollection.find(eq("sid", sid)).first();
+        Document salesManDocument = salesmenCollection.find(eq("sid", sid)).first();
         if (salesManDocument != null) {
             salesmenCollection.replaceOne(salesManDocument, newSalesMan.toDocument());
-        }*/
+        }
     }
 
     @Override
@@ -108,8 +126,8 @@ public class ManagePersonalImpl implements ManagePersonal {
 
     @Override
     public void deleteSalesMan(int sid) {
-        /*Document currentSalesManDocument = salesmenCollection.find(eq("sid", sid)).first();
-        salesmenCollection.deleteOne(currentSalesManDocument);*/
+        Document currentSalesManDocument = salesmenCollection.find(eq("sid", sid)).first();
+        salesmenCollection.deleteOne(currentSalesManDocument);
     }
 
     @Override

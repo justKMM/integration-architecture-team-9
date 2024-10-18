@@ -43,4 +43,10 @@ public class SalesMan {
                 .append("firstname", this.firstname)
                 .append("lastname", this.lastname);
     }
+
+    @Override
+    public String toString() {
+        return "SalesMan [firstname=" + firstname + ", lastname=" + lastname + ", sid=" + sid + "]";
+    }
+
 }

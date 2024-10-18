@@ -25,7 +25,9 @@ public class SocialPerformanceRecord {
         this.goalid = goalid;
     }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -63,4 +65,11 @@ public class SocialPerformanceRecord {
                 .append("actualValue", this.actualValue)
                 .append("year", this.year);
     }
+
+    @Override
+    public String toString() {
+        return "SocialPerformanceRecord [goalid=" + goalid + ", description=" + description + ", targetValue="
+                + targetValue + ", actualValue=" + actualValue + ", year=" + year + "]";
+    }
+
 }

@@ -1,8 +1,9 @@
 package de.hbrs.ia.code;
-import de.hbrs.ia.model.SalesMan;
-import de.hbrs.ia.model.SocialPerformanceRecord;
 
 import java.util.List;
+
+import de.hbrs.ia.model.SalesMan;
+import de.hbrs.ia.model.SocialPerformanceRecord;
 
 public interface ManagePersonal {
     // C - Create

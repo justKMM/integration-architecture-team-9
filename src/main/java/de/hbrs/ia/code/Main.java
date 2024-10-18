@@ -3,8 +3,6 @@ package de.hbrs.ia.code;
 import de.hbrs.ia.model.SalesMan;
 import de.hbrs.ia.model.SocialPerformanceRecord;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
         // Instantiate the control class
@@ -23,6 +21,8 @@ public class Main {
 
         SocialPerformanceRecord record2 = new SocialPerformanceRecord(2, "Openness Employee", 4, 2, 2024);
         managePersonal.addSocialPerformanceRecord(record2, salesMan1);
+
+        managePersonal.readSocialPerformanceRecord(salesMan1).forEach(System.out::println);
         /*
         // Add social performance record for salesMan2
         SocialPerformanceRecord record3 = new SocialPerformanceRecord("Strong leadership", 2023);

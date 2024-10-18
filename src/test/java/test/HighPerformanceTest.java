@@ -1,18 +1,17 @@
 package test;
 
-import com.mongodb.MongoClient;
-import de.hbrs.ia.code.ManagePersonal;
-import de.hbrs.ia.code.ManagePersonalImpl;
-import de.hbrs.ia.model.SalesMan;
-import org.bson.Document;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import de.hbrs.ia.code.ManagePersonal;
+import de.hbrs.ia.code.ManagePersonalImpl;
+import de.hbrs.ia.model.SalesMan;
 
 class HighPerformanceTest {
 
@@ -35,8 +34,8 @@ class HighPerformanceTest {
 
     @AfterEach
     void tearDown() {
-        this.managePersonal.deleteAllSalesMen();
-        this.managePersonal.deleteAllSocialPerformanceRecord();
+        // this.managePersonal.deleteAllSalesMen();
+        // this.managePersonal.deleteAllSocialPerformanceRecord();
     }
 
     // Test CREATE function
