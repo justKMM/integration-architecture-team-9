@@ -1,8 +1,7 @@
 package test;
 
-import com.mongodb.MongoClient;
 import de.hbrs.ia.code.ManagePersonal;
-import de.hbrs.ia.code.ManagePersonalImpl;
+import de.hbrs.ia.code.PersonalManager;
 import de.hbrs.ia.model.SalesMan;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +27,7 @@ class HighPerformanceTest {
     void setUp() {
         // Setting up the connection to a local MongoDB with standard port 27017
         // must be started within a terminal with command 'mongod'.
-        this.managePersonal = new ManagePersonalImpl();
+        this.managePersonal = new PersonalManager();
         this.salesManAlda = new SalesMan("Sascha", "Alda", 90133);
         this.salesManLuca = new SalesMan("Luca", "Ringhausen", 90134);
     }

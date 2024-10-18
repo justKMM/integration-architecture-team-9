@@ -17,7 +17,7 @@ public interface ManagePersonal {
 
     public List<SocialPerformanceRecord> readSocialPerformanceRecord( SalesMan salesMan );
 
-    public SocialPerformanceRecord readSocialPerformanceRecord( SalesMan salesMan, int year );
+    public List<SocialPerformanceRecord> readSocialPerformanceRecord( SalesMan salesMan, int year );
 
     // U - Update
     public void updateSalesMan( int sid, SalesMan newSalesMan );
