@@ -5,11 +5,21 @@ import de.hbrs.ia.model.SalesMan;
 public class SidNotFoundException extends RuntimeException {
 
     public SidNotFoundException(SalesMan salesMan) {
-        super("A salesman with the id: " + salesMan.getId() + " does not exist.");
+        super(
+            String.format(
+                "A salesman with the id \"%s\" does not exist.",
+                salesMan.getId()
+            )
+        );
     }
 
     public SidNotFoundException(int sid) {
-        super("A salesman with the id: " + sid + " does not exist.");
+        super(
+            String.format(
+                "A salesman with the id \"%s\" does not exist.",
+                sid
+            )
+        );
     }
 
 }

@@ -15,6 +15,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 
+import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
 import de.hbrs.ia.exceptions.SidNotFoundException;
 import de.hbrs.ia.model.SalesMan;
@@ -36,25 +37,29 @@ public class PersonalManager implements ManagePersonal {
         this.performanceRecordsCollection = this.database.getCollection("performancerecords");
 
         // Create Index for Salesman sid and PerformanceRecord sid+goalid
-        salesmenCollection.createIndex(new Document("sid", 1), new IndexOptions().unique(true));
-        // performanceRecordsCollection.createIndex(new Document("sid", 1).append("goalid", 1), new IndexOptions().unique(true));
+        this.salesmenCollection.createIndex(new Document("sid", 1), new IndexOptions().unique(true));
+        this.performanceRecordsCollection.createIndex(new Document("sid", 1).append("goalid", 1).append("year", 1), new IndexOptions().unique(true));
     }
 
     @Override
     public void createSalesMan(SalesMan salesMan) {
         try {
-            salesmenCollection.insertOne(salesMan.toDocument());
-        } catch (MongoWriteException exception) {
+            this.salesmenCollection.insertOne(salesMan.toDocument());
+        } catch (MongoWriteException mwe) {
             throw new DuplicateSidException(salesMan);
         }
     }
 
     @Override
     public void addSocialPerformanceRecord(SocialPerformanceRecord performanceRecord, SalesMan salesMan) {
-        this.performanceRecordsCollection.insertOne(
-            performanceRecord.toDocument()
-                .append("sid", salesMan.getId())
-        );
+        try {
+            this.performanceRecordsCollection.insertOne(
+                performanceRecord.toDocument()
+                    .append("sid", salesMan.getId())
+            );
+        } catch (MongoWriteException mwe) {
+            throw new DuplicatePerformanceRecordExcpetion(performanceRecord, salesMan);
+        }
     }
 
     @Override
@@ -99,9 +104,14 @@ public class PersonalManager implements ManagePersonal {
     }
 
     @Override
-    public void deleteSocialPerformanceRecord(int sid, int year) {
-        this.performanceRecordsCollection.deleteMany(
-                and(eq("sid", sid), eq("year", year))
+    public void deleteSocialPerformanceRecord(int sid, int goalid, int year) {
+        this.performanceRecordsCollection.deleteOne(
+                and(
+                    eq("sid", sid),
+                    eq("goalid", goalid),
+                    eq("year", year)
+                )
         );
     }
+
 }
