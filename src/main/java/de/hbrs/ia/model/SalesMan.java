@@ -13,8 +13,14 @@ public class SalesMan {
         this.sid = sid;
     }
 
+    public SalesMan(Document salesMan) {
+        this.firstname = salesMan.getString("firstname");
+        this.lastname = salesMan.getString("lastname");
+        this.sid = salesMan.getInteger("sid");
+    }
+
     public String getFirstname() {
-        return firstname;
+        return this.firstname;
     }
 
     public void setFirstname(String firstname) {
@@ -22,7 +28,7 @@ public class SalesMan {
     }
 
     public String getLastname() {
-        return lastname;
+        return this.lastname;
     }
 
     public void setLastname(String lastname) {
@@ -30,7 +36,7 @@ public class SalesMan {
     }
 
     public Integer getId() {
-        return sid;
+        return this.sid;
     }
 
     public void setId(Integer sid) {
@@ -43,4 +49,14 @@ public class SalesMan {
                 .append("firstname", this.firstname)
                 .append("lastname", this.lastname);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "SalesMan [firstname=%s, lastname=%s, sid=%s]",
+            this.firstname,
+            this.lastname,
+            this.sid);
+    }
+
 }

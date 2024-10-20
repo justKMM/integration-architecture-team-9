@@ -17,22 +17,32 @@ public class SocialPerformanceRecord {
         this.year = year;
     }
 
+    public SocialPerformanceRecord(Document record) {
+        this.goalid = record.getInteger("goalid");
+        this.description = record.getString("description");
+        this.targetValue = record.getInteger("targetValue");
+        this.actualValue = record.getInteger("actualValue");
+        this.year = record.getInteger("year");
+    }
+
     public Integer getGoalid() {
-        return goalid;
+        return this.goalid;
     }
 
     public void setGoalid(Integer goalid) {
         this.goalid = goalid;
     }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return this.description;
+    }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
     public Integer getTargetValue() {
-        return targetValue;
+        return this.targetValue;
     }
 
     public void setTargetValue(Integer targetValue) {
@@ -40,7 +50,7 @@ public class SocialPerformanceRecord {
     }
 
     public Integer getActualValue() {
-        return actualValue;
+        return this.actualValue;
     }
 
     public void setActualValue(Integer actualValue) {
@@ -48,7 +58,7 @@ public class SocialPerformanceRecord {
     }
 
     public Integer getYear() {
-        return year;
+        return this.year;
     }
 
     public void setYear(Integer year) {
@@ -63,4 +73,18 @@ public class SocialPerformanceRecord {
                 .append("actualValue", this.actualValue)
                 .append("year", this.year);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "SocialPerformanceRecord [goalid=%s, description=%s, targetValue=%s, actualValue=%s, year=%s]",
+            this.goalid,
+            this.description,
+            this.targetValue,
+            this.actualValue,
+            this.year
+        );
+    }
+
+
 }
