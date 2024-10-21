@@ -1,14 +1,20 @@
 package de.hbrs.ia.code;
 
+import java.util.List;
+
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+
 import de.hbrs.ia.model.SalesMan;
 import de.hbrs.ia.model.SocialPerformanceRecord;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
+        // Connect to the local MongoDB instance
+        MongoDatabase database = MongoClients.create("mongodb://localhost:27017/").getDatabase("highperformance");
+
         // Instantiate the control class
-        PersonalManager managePersonal = new PersonalManager();
+        PersonalManager managePersonal = new PersonalManager(database);
 
         // Create a new Salesman
         SalesMan salesMan1 = new SalesMan("John", "Doe", 101);
@@ -59,5 +65,7 @@ public class Main {
         for (SocialPerformanceRecord sr : socialRecords2024) {
             System.out.println(sr.getYear() + ": " + sr.getDescription() + " Target Value: " + sr.getTargetValue() + " Actual Value: " + sr.getActualValue());
         }
+
     }
+
 }

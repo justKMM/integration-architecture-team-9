@@ -13,10 +13,10 @@ public class SalesMan {
         this.sid = sid;
     }
 
-    public SalesMan(Document salesMan) {
-        this.firstname = salesMan.getString("firstname");
-        this.lastname = salesMan.getString("lastname");
-        this.sid = salesMan.getInteger("sid");
+    public SalesMan(Document document) {
+        this.firstname = document.getString("firstname");
+        this.lastname = document.getString("lastname");
+        this.sid = document.getInteger("sid");
     }
 
     public String getFirstname() {

@@ -17,12 +17,12 @@ public class SocialPerformanceRecord {
         this.year = year;
     }
 
-    public SocialPerformanceRecord(Document record) {
-        this.goalid = record.getInteger("goalid");
-        this.description = record.getString("description");
-        this.targetValue = record.getInteger("targetValue");
-        this.actualValue = record.getInteger("actualValue");
-        this.year = record.getInteger("year");
+    public SocialPerformanceRecord(Document document) {
+        this.goalid = document.getInteger("goalid");
+        this.description = document.getString("description");
+        this.targetValue = document.getInteger("targetValue");
+        this.actualValue = document.getInteger("actualValue");
+        this.year = document.getInteger("year");
     }
 
     public Integer getGoalid() {

@@ -1,19 +1,19 @@
 package de.hbrs.ia.code;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 
-import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
@@ -23,22 +23,45 @@ import de.hbrs.ia.model.SocialPerformanceRecord;
 
 public class PersonalManager implements ManagePersonal {
 
-    private final MongoClient mongoClient;
-    private final MongoDatabase database;
     private final MongoCollection<Document> salesmenCollection;
     private final MongoCollection<Document> performanceRecordsCollection;
 
-    public PersonalManager() {
-        // Connect to the local MongoDB instance
-        this.mongoClient = new MongoClient("localhost", 27017);
-        this.database = mongoClient.getDatabase("highperformance");
+    public PersonalManager(MongoDatabase database) {
+        // Get the Collections
+        // if (!collectionExists(database, "salesmen"))
+        //     database.createCollection("salesmen");
+        this.salesmenCollection = database.getCollection("salesmen");
 
-        this.salesmenCollection = this.database.getCollection("salesmen");
-        this.performanceRecordsCollection = this.database.getCollection("performancerecords");
+        // if (!collectionExists(database, "performancerecords"))
+        //     database.createCollection("performancerecords");
+        this.performanceRecordsCollection = database.getCollection("performancerecords");
 
-        // Create Index for Salesman sid and PerformanceRecord sid+goalid
-        this.salesmenCollection.createIndex(new Document("sid", 1), new IndexOptions().unique(true));
-        this.performanceRecordsCollection.createIndex(new Document("sid", 1).append("goalid", 1).append("year", 1), new IndexOptions().unique(true));
+        // Set up indexes
+        this.salesmenCollection.createIndex(
+            Indexes.ascending("sid"),
+            new IndexOptions().unique(true)
+        );
+        this.performanceRecordsCollection.createIndex(
+            Indexes.compoundIndex(
+                Indexes.ascending("sid"),
+                Indexes.ascending("goalid"),
+                Indexes.ascending("year")
+            ),
+            new IndexOptions().unique(true)
+        );
+    }
+
+    private boolean collectionExists(MongoDatabase database, String collectionName) {
+        for (String name : database.listCollectionNames()) {
+            System.out.println("Collection Name: " + name);
+            if (name.equalsIgnoreCase(collectionName))
+                return true;
+        }
+        return false;
+        // return database.listCollectionNames()
+        //     .into(new ArrayList<>())
+        //     .stream()
+        //     .anyMatch(name -> name.equalsIgnoreCase(collectionName));
     }
 
     @Override
@@ -67,9 +90,10 @@ public class PersonalManager implements ManagePersonal {
         return Optional.ofNullable(
             this.salesmenCollection
                 .find(eq("sid", sid))
-                .map(SalesMan::new)
                 .first()
-        ).orElseThrow(() -> new SidNotFoundException(sid));
+            )
+            .map(SalesMan::new)
+            .orElseThrow(() -> new SidNotFoundException(sid));
     }
 
     @Override
@@ -93,7 +117,7 @@ public class PersonalManager implements ManagePersonal {
         return this.readSocialPerformanceRecord(salesMan)
             .stream()
             .filter(r -> r.getYear() == year)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     @Override
