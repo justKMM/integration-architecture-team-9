@@ -2,6 +2,10 @@ package de.hbrs.ia.model;
 
 import org.bson.Document;
 
+import static de.hbrs.ia.constants.Constants.FIRST_NAME;
+import static de.hbrs.ia.constants.Constants.LAST_NAME;
+import static de.hbrs.ia.constants.Constants.SID;
+
 public class SalesMan {
     private String firstname;
     private String lastname;
@@ -14,9 +18,9 @@ public class SalesMan {
     }
 
     public SalesMan(Document document) {
-        this.firstname = document.getString("firstname");
-        this.lastname = document.getString("lastname");
-        this.sid = document.getInteger("sid");
+        this.firstname = document.getString(FIRST_NAME);
+        this.lastname = document.getString(LAST_NAME);
+        this.sid = document.getInteger(SID);
     }
 
     public String getFirstname() {
@@ -45,9 +49,9 @@ public class SalesMan {
 
     public Document toDocument() {
         return new Document()
-                .append("sid", this.sid)
-                .append("firstname", this.firstname)
-                .append("lastname", this.lastname);
+                .append(SID, this.sid)
+                .append(FIRST_NAME, this.firstname)
+                .append(LAST_NAME, this.lastname);
     }
 
     @Override

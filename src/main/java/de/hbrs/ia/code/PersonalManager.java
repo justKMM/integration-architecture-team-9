@@ -5,18 +5,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.mongodb.client.model.CreateCollectionOptions;
-import com.mongodb.client.model.ValidationOptions;
 import org.bson.Document;
 
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CreateCollectionOptions;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.ValidationOptions;
 
+import static de.hbrs.ia.constants.Constants.ACTUAL_VALUE;
+import static de.hbrs.ia.constants.Constants.DESCRIPTION;
+import static de.hbrs.ia.constants.Constants.FIRST_NAME;
+import static de.hbrs.ia.constants.Constants.GOAL_ID;
+import static de.hbrs.ia.constants.Constants.LAST_NAME;
+import static de.hbrs.ia.constants.Constants.PERFORMANE_RECORDS;
+import static de.hbrs.ia.constants.Constants.SALESMEN;
+import static de.hbrs.ia.constants.Constants.SID;
+import static de.hbrs.ia.constants.Constants.TARGET_VALUE;
+import static de.hbrs.ia.constants.Constants.YEAR;
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
 import de.hbrs.ia.exceptions.SidNotFoundException;
@@ -30,69 +40,63 @@ public class PersonalManager implements ManagePersonal {
 
     public PersonalManager(MongoDatabase database) {
         // Get the Collections
-        if (!collectionExists(database, "salesmen")) {
+        if (!collectionExists(database, SALESMEN)) {
             Document validator = new Document("$jsonSchema", new Document()
                     .append("bsonType", "object")
-                    .append("required", List.of("sid", "firstname", "lastname"))
+                    .append("required", List.of(SID, FIRST_NAME, LAST_NAME))
                     .append("properties", new Document()
-                            .append("sid", new Document("bsonType", "int"))
-                            .append("firstname", new Document("bsonType", "string"))
-                            .append("lastname", new Document("bsonType", "string"))
+                            .append(SID, new Document("bsonType", "int"))
+                            .append(FIRST_NAME, new Document("bsonType", "string"))
+                            .append(LAST_NAME, new Document("bsonType", "string"))
                     ));
-            database.createCollection("salesmen",
+            database.createCollection(SALESMEN,
                     new CreateCollectionOptions().validationOptions(
                                     new ValidationOptions().validator(validator)
                     )
             );
         }
-        this.salesmenCollection = database.getCollection("salesmen");
+        this.salesmenCollection = database.getCollection(SALESMEN);
 
-        if (!collectionExists(database, "performancerecords")) {
+        if (!collectionExists(database, PERFORMANE_RECORDS)) {
 
             Document validator = new Document("$jsonSchema", new Document("bsonType", "object")
-                            .append("required", List.of("sid", "goalid", "description", "targetValue", "actualValue", "year"))
-                            .append("properties", new Document("sid", new Document("bsonType", "int"))
-                                    .append("goalid", new Document("bsonType", "int"))
-                                    .append("description", new Document("bsonType", "string"))
-                                    .append("targetValue", new Document("bsonType", "int"))
-                                    .append("actualValue", new Document("bsonType", "int"))
-                                    .append("year", new Document("bsonType", "int"))
+                            .append("required", List.of(SID, GOAL_ID, DESCRIPTION, TARGET_VALUE, ACTUAL_VALUE, YEAR))
+                            .append("properties", new Document(SID, new Document("bsonType", "int"))
+                                    .append(GOAL_ID, new Document("bsonType", "int"))
+                                    .append(DESCRIPTION, new Document("bsonType", "string"))
+                                    .append(TARGET_VALUE, new Document("bsonType", "int"))
+                                    .append(ACTUAL_VALUE, new Document("bsonType", "int"))
+                                    .append(YEAR, new Document("bsonType", "int"))
                             ));
-            database.createCollection("performancerecords",
+            database.createCollection(PERFORMANE_RECORDS,
                     new CreateCollectionOptions().validationOptions(
                             new ValidationOptions().validator(validator)
                     )
             );
         }
 
-        this.performanceRecordsCollection = database.getCollection("performancerecords");
+        this.performanceRecordsCollection = database.getCollection(PERFORMANE_RECORDS);
 
         // Set up indexes
         this.salesmenCollection.createIndex(
-            Indexes.ascending("sid"),
+            Indexes.ascending(SID),
             new IndexOptions().unique(true)
         );
         this.performanceRecordsCollection.createIndex(
             Indexes.compoundIndex(
-                Indexes.ascending("sid"),
-                Indexes.ascending("goalid"),
-                Indexes.ascending("year")
+                Indexes.ascending(SID),
+                Indexes.ascending(GOAL_ID),
+                Indexes.ascending(YEAR)
             ),
             new IndexOptions().unique(true)
         );
     }
 
     private boolean collectionExists(MongoDatabase database, String collectionName) {
-        for (String name : database.listCollectionNames()) {
-            System.out.println("Collection Name: " + name);
-            if (name.equalsIgnoreCase(collectionName))
-                return true;
-        }
-        return false;
-        // return database.listCollectionNames()
-        //     .into(new ArrayList<>())
-        //     .stream()
-        //     .anyMatch(name -> name.equalsIgnoreCase(collectionName));
+        return database.listCollectionNames()
+            .into(new ArrayList<>())
+            .stream()
+            .anyMatch(name -> name.equalsIgnoreCase(collectionName));
     }
 
     @Override
@@ -109,7 +113,7 @@ public class PersonalManager implements ManagePersonal {
         try {
             this.performanceRecordsCollection.insertOne(
                 performanceRecord.toDocument()
-                    .append("sid", salesMan.getId())
+                    .append(SID, salesMan.getId())
             );
         } catch (MongoWriteException mwe) {
             throw new DuplicatePerformanceRecordExcpetion(performanceRecord, salesMan);
@@ -120,7 +124,7 @@ public class PersonalManager implements ManagePersonal {
     public SalesMan readSalesMan(int sid) {
         return Optional.ofNullable(
             this.salesmenCollection
-                .find(eq("sid", sid))
+                .find(eq(SID, sid))
                 .first()
             )
             .map(SalesMan::new)
@@ -138,7 +142,7 @@ public class PersonalManager implements ManagePersonal {
     @Override
     public List<SocialPerformanceRecord> readSocialPerformanceRecord(SalesMan salesMan) {
         return this.performanceRecordsCollection
-            .find(eq("sid", salesMan.getId()))
+            .find(eq(SID, salesMan.getId()))
             .map(SocialPerformanceRecord::new)
             .into(new ArrayList<>());
     }
@@ -154,7 +158,7 @@ public class PersonalManager implements ManagePersonal {
     @Override
     public void deleteSalesMan(int sid) {
         this.salesmenCollection.deleteOne(
-                eq("sid", sid)
+                eq(SID, sid)
         );
     }
 
@@ -162,9 +166,9 @@ public class PersonalManager implements ManagePersonal {
     public void deleteSocialPerformanceRecord(int sid, int goalid, int year) {
         this.performanceRecordsCollection.deleteOne(
                 and(
-                    eq("sid", sid),
-                    eq("goalid", goalid),
-                    eq("year", year)
+                    eq(SID, sid),
+                    eq(GOAL_ID, goalid),
+                    eq(YEAR, year)
                 )
         );
     }

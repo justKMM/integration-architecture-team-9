@@ -2,6 +2,12 @@ package de.hbrs.ia.model;
 
 import org.bson.Document;
 
+import static de.hbrs.ia.constants.Constants.ACTUAL_VALUE;
+import static de.hbrs.ia.constants.Constants.DESCRIPTION;
+import static de.hbrs.ia.constants.Constants.GOAL_ID;
+import static de.hbrs.ia.constants.Constants.TARGET_VALUE;
+import static de.hbrs.ia.constants.Constants.YEAR;
+
 public class SocialPerformanceRecord {
     private Integer goalid;
     private String description;
@@ -9,20 +15,20 @@ public class SocialPerformanceRecord {
     private Integer actualValue;
     private Integer year;
 
-    public SocialPerformanceRecord(Integer goalid, String descrption, Integer targetValue, Integer actualValue, Integer year) {
+    public SocialPerformanceRecord(Integer goalid, String description, Integer targetValue, Integer actualValue, Integer year) {
         this.goalid = goalid;
-        this.description = descrption;
+        this.description = description;
         this.targetValue = targetValue;
         this.actualValue = actualValue;
         this.year = year;
     }
 
     public SocialPerformanceRecord(Document document) {
-        this.goalid = document.getInteger("goalid");
-        this.description = document.getString("description");
-        this.targetValue = document.getInteger("targetValue");
-        this.actualValue = document.getInteger("actualValue");
-        this.year = document.getInteger("year");
+        this.goalid = document.getInteger(GOAL_ID);
+        this.description = document.getString(DESCRIPTION);
+        this.targetValue = document.getInteger(TARGET_VALUE);
+        this.actualValue = document.getInteger(ACTUAL_VALUE);
+        this.year = document.getInteger(YEAR);
     }
 
     public Integer getGoalid() {
@@ -67,11 +73,11 @@ public class SocialPerformanceRecord {
 
     public Document toDocument() {
         return new Document()
-                .append("goalid", this.goalid)
-                .append("description", this.description)
-                .append("targetValue", this.targetValue)
-                .append("actualValue", this.actualValue)
-                .append("year", this.year);
+                .append(GOAL_ID, this.goalid)
+                .append(DESCRIPTION, this.description)
+                .append(TARGET_VALUE, this.targetValue)
+                .append(ACTUAL_VALUE, this.actualValue)
+                .append(YEAR, this.year);
     }
 
     @Override

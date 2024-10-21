@@ -8,6 +8,8 @@ public interface ManagePersonal {
     // C - Create
     public void createSalesMan(SalesMan salesMan);
 
+    public void addSocialPerformanceRecord(SocialPerformanceRecord performanceRecord , SalesMan salesMan);
+
     // R - Read
     public SalesMan readSalesMan(int sid);
 
@@ -18,7 +20,6 @@ public interface ManagePersonal {
     public List<SocialPerformanceRecord> readSocialPerformanceRecord(SalesMan salesMan, int year);
 
     // U - Update
-    public void addSocialPerformanceRecord(SocialPerformanceRecord performanceRecord , SalesMan salesMan);
 
     // D - Delete
     public void deleteSalesMan(int sid);
