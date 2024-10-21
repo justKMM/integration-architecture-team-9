@@ -1,10 +1,10 @@
 package de.hbrs.ia.model;
 
-import org.bson.Document;
+import static de.hbrs.ia.util.Constants.FIRST_NAME;
+import static de.hbrs.ia.util.Constants.LAST_NAME;
+import static de.hbrs.ia.util.Constants.SID;
 
-import static de.hbrs.ia.constants.Constants.FIRST_NAME;
-import static de.hbrs.ia.constants.Constants.LAST_NAME;
-import static de.hbrs.ia.constants.Constants.SID;
+import org.bson.Document;
 
 public class SalesMan {
     private String firstname;

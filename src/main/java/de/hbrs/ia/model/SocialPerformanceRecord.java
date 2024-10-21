@@ -1,12 +1,12 @@
 package de.hbrs.ia.model;
 
-import org.bson.Document;
+import static de.hbrs.ia.util.Constants.ACTUAL_VALUE;
+import static de.hbrs.ia.util.Constants.DESCRIPTION;
+import static de.hbrs.ia.util.Constants.GOAL_ID;
+import static de.hbrs.ia.util.Constants.TARGET_VALUE;
+import static de.hbrs.ia.util.Constants.YEAR;
 
-import static de.hbrs.ia.constants.Constants.ACTUAL_VALUE;
-import static de.hbrs.ia.constants.Constants.DESCRIPTION;
-import static de.hbrs.ia.constants.Constants.GOAL_ID;
-import static de.hbrs.ia.constants.Constants.TARGET_VALUE;
-import static de.hbrs.ia.constants.Constants.YEAR;
+import org.bson.Document;
 
 public class SocialPerformanceRecord {
     private Integer goalid;

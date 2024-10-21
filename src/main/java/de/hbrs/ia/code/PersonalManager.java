@@ -1,5 +1,18 @@
 package de.hbrs.ia.code;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static de.hbrs.ia.util.Constants.ACTUAL_VALUE;
+import static de.hbrs.ia.util.Constants.DESCRIPTION;
+import static de.hbrs.ia.util.Constants.FIRST_NAME;
+import static de.hbrs.ia.util.Constants.GOAL_ID;
+import static de.hbrs.ia.util.Constants.LAST_NAME;
+import static de.hbrs.ia.util.Constants.PERFORMANCE_COLLECTION;
+import static de.hbrs.ia.util.Constants.SALESMEN_COLLECTION;
+import static de.hbrs.ia.util.Constants.SID;
+import static de.hbrs.ia.util.Constants.TARGET_VALUE;
+import static de.hbrs.ia.util.Constants.YEAR;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,22 +24,10 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.ValidationOptions;
 
-import static de.hbrs.ia.constants.Constants.ACTUAL_VALUE;
-import static de.hbrs.ia.constants.Constants.DESCRIPTION;
-import static de.hbrs.ia.constants.Constants.FIRST_NAME;
-import static de.hbrs.ia.constants.Constants.GOAL_ID;
-import static de.hbrs.ia.constants.Constants.LAST_NAME;
-import static de.hbrs.ia.constants.Constants.PERFORMANE_RECORDS;
-import static de.hbrs.ia.constants.Constants.SALESMEN;
-import static de.hbrs.ia.constants.Constants.SID;
-import static de.hbrs.ia.constants.Constants.TARGET_VALUE;
-import static de.hbrs.ia.constants.Constants.YEAR;
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
 import de.hbrs.ia.exceptions.SidNotFoundException;
@@ -40,7 +41,7 @@ public class PersonalManager implements ManagePersonal {
 
     public PersonalManager(MongoDatabase database) {
         // Get the Collections
-        if (!collectionExists(database, SALESMEN)) {
+        if (!collectionExists(database, SALESMEN_COLLECTION)) {
             Document validator = new Document("$jsonSchema", new Document()
                     .append("bsonType", "object")
                     .append("required", List.of(SID, FIRST_NAME, LAST_NAME))
@@ -49,15 +50,15 @@ public class PersonalManager implements ManagePersonal {
                             .append(FIRST_NAME, new Document("bsonType", "string"))
                             .append(LAST_NAME, new Document("bsonType", "string"))
                     ));
-            database.createCollection(SALESMEN,
+            database.createCollection(SALESMEN_COLLECTION,
                     new CreateCollectionOptions().validationOptions(
                                     new ValidationOptions().validator(validator)
                     )
             );
         }
-        this.salesmenCollection = database.getCollection(SALESMEN);
+        this.salesmenCollection = database.getCollection(SALESMEN_COLLECTION);
 
-        if (!collectionExists(database, PERFORMANE_RECORDS)) {
+        if (!collectionExists(database, PERFORMANCE_COLLECTION)) {
 
             Document validator = new Document("$jsonSchema", new Document("bsonType", "object")
                             .append("required", List.of(SID, GOAL_ID, DESCRIPTION, TARGET_VALUE, ACTUAL_VALUE, YEAR))
@@ -68,14 +69,14 @@ public class PersonalManager implements ManagePersonal {
                                     .append(ACTUAL_VALUE, new Document("bsonType", "int"))
                                     .append(YEAR, new Document("bsonType", "int"))
                             ));
-            database.createCollection(PERFORMANE_RECORDS,
+            database.createCollection(PERFORMANCE_COLLECTION,
                     new CreateCollectionOptions().validationOptions(
                             new ValidationOptions().validator(validator)
                     )
             );
         }
 
-        this.performanceRecordsCollection = database.getCollection(PERFORMANE_RECORDS);
+        this.performanceRecordsCollection = database.getCollection(PERFORMANCE_COLLECTION);
 
         // Set up indexes
         this.salesmenCollection.createIndex(
