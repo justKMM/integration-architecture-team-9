@@ -48,8 +48,8 @@ public class PersonalManager implements ManagePersonal {
         this.salesmenCollection = database.getCollection("salesmen");
 
         if (!collectionExists(database, "performancerecords")) {
-
-            Document validator = new Document("$jsonSchema", new Document("bsonType", "object")
+            Document validator = new Document("$jsonSchema", new Document()
+                            .append("bsonType", "object")
                             .append("required", List.of("sid", "goalid", "description", "targetValue", "actualValue", "year"))
                             .append("properties", new Document("sid", new Document("bsonType", "int"))
                                     .append("goalid", new Document("bsonType", "int"))
@@ -64,7 +64,6 @@ public class PersonalManager implements ManagePersonal {
                     )
             );
         }
-
         this.performanceRecordsCollection = database.getCollection("performancerecords");
 
         // Set up indexes
