@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.ValidationOptions;
 import org.bson.Document;
 
 import com.mongodb.MongoWriteException;
@@ -28,12 +30,41 @@ public class PersonalManager implements ManagePersonal {
 
     public PersonalManager(MongoDatabase database) {
         // Get the Collections
-        // if (!collectionExists(database, "salesmen"))
-        //     database.createCollection("salesmen");
+        if (!collectionExists(database, "salesmen")) {
+            Document validator = new Document("$jsonSchema", new Document()
+                    .append("bsonType", "object")
+                    .append("required", List.of("sid", "firstname", "lastname"))
+                    .append("properties", new Document()
+                            .append("sid", new Document("bsonType", "int"))
+                            .append("firstname", new Document("bsonType", "string"))
+                            .append("lastname", new Document("bsonType", "string"))
+                    ));
+            database.createCollection("salesmen",
+                    new CreateCollectionOptions().validationOptions(
+                                    new ValidationOptions().validator(validator)
+                    )
+            );
+        }
         this.salesmenCollection = database.getCollection("salesmen");
 
-        // if (!collectionExists(database, "performancerecords"))
-        //     database.createCollection("performancerecords");
+        if (!collectionExists(database, "performancerecords")) {
+
+            Document validator = new Document("$jsonSchema", new Document("bsonType", "object")
+                            .append("required", List.of("sid", "goalid", "description", "targetValue", "actualValue", "year"))
+                            .append("properties", new Document("sid", new Document("bsonType", "int"))
+                                    .append("goalid", new Document("bsonType", "int"))
+                                    .append("description", new Document("bsonType", "string"))
+                                    .append("targetValue", new Document("bsonType", "int"))
+                                    .append("actualValue", new Document("bsonType", "int"))
+                                    .append("year", new Document("bsonType", "int"))
+                            ));
+            database.createCollection("performancerecords",
+                    new CreateCollectionOptions().validationOptions(
+                            new ValidationOptions().validator(validator)
+                    )
+            );
+        }
+
         this.performanceRecordsCollection = database.getCollection("performancerecords");
 
         // Set up indexes
