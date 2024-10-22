@@ -5,7 +5,7 @@ public class SalesManHasPerformanceRecordsException extends RuntimeException {
     public SalesManHasPerformanceRecordsException(int sid) {
         super(
             String.format(
-                "Es existieren noch SocialPerformanceRecords zu dem SalesMan mit der sid \"%s\".",
+                "The SalesMan \"%s\" has PerformanceRecords in the PerformanceRecord collection.",
                 sid
             )
         );

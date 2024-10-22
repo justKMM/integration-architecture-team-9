@@ -158,10 +158,11 @@ class PersonalManagerTest {
         personalManager.createSalesMan(salesMan);
         personalManager.addSocialPerformanceRecord(record, salesMan);
 
-        Exception e = assertThrows(SalesManHasPerformanceRecordsException.class,
+        Exception e = assertThrows(
+            SalesManHasPerformanceRecordsException.class,
             () -> personalManager.deleteSalesMan(salesMan.getId())
         );
-        assertEquals("Es existieren noch SocialPerformanceRecords zu dem SalesMan mit der sid \"7\".", e.getMessage());
+        assertEquals("The SalesMan \"7\" has PerformanceRecords in the PerformanceRecord collection.", e.getMessage());
     }
 
     @Test
