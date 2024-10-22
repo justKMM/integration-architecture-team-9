@@ -42,37 +42,49 @@ public class PersonalManager implements ManagePersonal {
     public PersonalManager(MongoDatabase database) {
         // Get the Collections
         if (!collectionExists(database, SALESMEN_COLLECTION)) {
-            Document validator = new Document("$jsonSchema", new Document()
-                    .append("bsonType", "object")
+            Document validator = new Document(
+                "$jsonSchema",
+                new Document("bsonType", "object")
                     .append("required", List.of(SID, FIRST_NAME, LAST_NAME))
-                    .append("properties", new Document()
+                    .append(
+                        "properties",
+                        new Document()
                             .append(SID, new Document("bsonType", "int").append("minimum", 0))
                             .append(FIRST_NAME, new Document("bsonType", "string"))
                             .append(LAST_NAME, new Document("bsonType", "string"))
-                    ));
-            database.createCollection(SALESMEN_COLLECTION,
-                    new CreateCollectionOptions().validationOptions(
-                                    new ValidationOptions().validator(validator)
+                    )
+            );
+            database.createCollection(
+                SALESMEN_COLLECTION,
+                new CreateCollectionOptions()
+                    .validationOptions(
+                        new ValidationOptions().validator(validator)
                     )
             );
         }
         this.salesmenCollection = database.getCollection(SALESMEN_COLLECTION);
 
         if (!collectionExists(database, PERFORMANCE_COLLECTION)) {
-
-            Document validator = new Document("$jsonSchema", new Document("bsonType", "object")
-                            .append("required", List.of(SID, GOAL_ID, DESCRIPTION, TARGET_VALUE, ACTUAL_VALUE, YEAR))
-                            .append("properties", new Document(SID, new Document("bsonType", "int").append("minimum", 0))
-                                    .append(GOAL_ID, new Document("bsonType", "int").append("minimum", 0))
-                                    .append(DESCRIPTION, new Document("bsonType", "string"))
-                                    .append(TARGET_VALUE, new Document("bsonType", "int"))
-                                    .append(ACTUAL_VALUE, new Document("bsonType", "int"))
-                                    .append(YEAR, new Document("bsonType", "int"))
-                            ));
-            database.createCollection(PERFORMANCE_COLLECTION,
-                    new CreateCollectionOptions().validationOptions(
-                            new ValidationOptions().validator(validator)
+            Document validator = new Document(
+                "$jsonSchema",
+                new Document("bsonType", "object")
+                    .append("required", List.of(SID, GOAL_ID, DESCRIPTION, TARGET_VALUE, ACTUAL_VALUE, YEAR))
+                    .append(
+                        "properties",
+                        new Document(SID, new Document("bsonType", "int").append("minimum", 0))
+                            .append(GOAL_ID, new Document("bsonType", "int").append("minimum", 0))
+                            .append(DESCRIPTION, new Document("bsonType", "string"))
+                            .append(TARGET_VALUE, new Document("bsonType", "int"))
+                            .append(ACTUAL_VALUE, new Document("bsonType", "int"))
+                            .append(YEAR, new Document("bsonType", "int"))
                     )
+                );
+            database.createCollection(
+                PERFORMANCE_COLLECTION,
+                new CreateCollectionOptions()
+                    .validationOptions(
+                        new ValidationOptions().validator(validator)
+                )
             );
         }
 
