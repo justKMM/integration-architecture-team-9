@@ -18,15 +18,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.mongodb.client.model.*;
 import org.bson.Document;
 
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.CreateCollectionOptions;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.model.ValidationOptions;
 
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
@@ -58,7 +55,10 @@ public class PersonalManager implements ManagePersonal {
                 SALESMEN_COLLECTION,
                 new CreateCollectionOptions()
                     .validationOptions(
-                        new ValidationOptions().validator(validator)
+                        new ValidationOptions()
+                                .validator(validator)
+                                .validationLevel(ValidationLevel.STRICT)
+                                .validationAction(ValidationAction.ERROR)
                     )
             );
         }
@@ -83,7 +83,10 @@ public class PersonalManager implements ManagePersonal {
                 PERFORMANCE_COLLECTION,
                 new CreateCollectionOptions()
                     .validationOptions(
-                        new ValidationOptions().validator(validator)
+                        new ValidationOptions()
+                                .validator(validator)
+                                .validationLevel(ValidationLevel.STRICT)
+                                .validationAction(ValidationAction.ERROR)
                 )
             );
         }
