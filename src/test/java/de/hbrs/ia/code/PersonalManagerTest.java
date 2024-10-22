@@ -1,13 +1,13 @@
 package de.hbrs.ia.code;
 
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.List;
-
-import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +16,7 @@ import com.mongodb.client.MongoDatabase;
 
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
+import de.hbrs.ia.exceptions.SalesManHasPerformanceRecordsException;
 import de.hbrs.ia.exceptions.SidNotFoundException;
 import de.hbrs.ia.model.SalesMan;
 import de.hbrs.ia.model.SocialPerformanceRecord;
@@ -137,17 +138,30 @@ class PersonalManagerTest {
 
     @Test
     public void testDeleteSalesMan() {
-        SalesMan s1 = new SalesMan("John", "Doe", 2);
+        SalesMan salesMan = new SalesMan("John", "Doe", 2);
 
-        personalManager.createSalesMan(s1);
+        personalManager.createSalesMan(salesMan);
 
-        personalManager.deleteSalesMan(s1.getId());
+        personalManager.deleteSalesMan(salesMan.getId());
 
-        Exception e = assertThrows(
-            SidNotFoundException.class,
-            () -> personalManager.readSalesMan(s1.getId())
+        Exception e = assertThrows(SidNotFoundException.class,
+            () -> personalManager.readSalesMan(salesMan.getId())
         );
         assertEquals("A salesman with the id \"2\" does not exist.", e.getMessage());
+    }
+
+    @Test
+    public void testDeleteSalesManThrowsException() {
+        SalesMan salesMan = new SalesMan("John", "Doe", 7);
+        SocialPerformanceRecord record = new SocialPerformanceRecord(7, "Description", 4, 3, 2021);
+
+        personalManager.createSalesMan(salesMan);
+        personalManager.addSocialPerformanceRecord(record, salesMan);
+
+        Exception e = assertThrows(SalesManHasPerformanceRecordsException.class,
+            () -> personalManager.deleteSalesMan(salesMan.getId())
+        );
+        assertEquals("Es existieren noch SocialPerformanceRecords zu dem SalesMan mit der sid \"7\".", e.getMessage());
     }
 
     @Test
@@ -168,5 +182,22 @@ class PersonalManagerTest {
             () -> assertEquals(1, records.size()),
             () -> assertEquals(r1.getGoalid(), records.get(0).getGoalid())
         );
+    }
+
+    @Test
+    public void testDeleteAllSocialPerformanceRecords() {
+        SalesMan salesMan = new SalesMan("John", "Doe", 1);
+
+        SocialPerformanceRecord r1 = new SocialPerformanceRecord(1, "Description1", 5, 4, 2023);
+        SocialPerformanceRecord r2 = new SocialPerformanceRecord(2, "Description2", 4, 4, 2024);
+
+        personalManager.addSocialPerformanceRecord(r1, salesMan);
+        personalManager.addSocialPerformanceRecord(r2, salesMan);
+
+        personalManager.deleteAllSocialPerformanceRecords(1);
+
+        List<SocialPerformanceRecord> records = personalManager.readSocialPerformanceRecord(salesMan);
+
+        assertTrue(records.isEmpty());
     }
 }

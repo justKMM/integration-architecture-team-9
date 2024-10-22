@@ -12,6 +12,7 @@ public class SidNotFoundException extends RuntimeException {
             )
         );
     }
+
     public SidNotFoundException(SalesMan salesMan) {
         this(salesMan.getId());
     }

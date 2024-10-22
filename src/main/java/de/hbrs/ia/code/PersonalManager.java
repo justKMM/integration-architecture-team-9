@@ -2,32 +2,21 @@ package de.hbrs.ia.code;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static de.hbrs.ia.util.Constants.ACTUAL_VALUE;
-import static de.hbrs.ia.util.Constants.DESCRIPTION;
-import static de.hbrs.ia.util.Constants.FIRST_NAME;
-import static de.hbrs.ia.util.Constants.GOAL_ID;
-import static de.hbrs.ia.util.Constants.LAST_NAME;
-import static de.hbrs.ia.util.Constants.PERFORMANCE_COLLECTION;
-import static de.hbrs.ia.util.Constants.SALESMEN_COLLECTION;
-import static de.hbrs.ia.util.Constants.SID;
-import static de.hbrs.ia.util.Constants.TARGET_VALUE;
-import static de.hbrs.ia.util.Constants.YEAR;
+import static de.hbrs.ia.util.Constants.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.mongodb.client.model.*;
 import org.bson.Document;
 
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.*;
 
-import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
-import de.hbrs.ia.exceptions.DuplicateSidException;
-import de.hbrs.ia.exceptions.SidNotFoundException;
+import de.hbrs.ia.exceptions.*;
 import de.hbrs.ia.model.SalesMan;
 import de.hbrs.ia.model.SocialPerformanceRecord;
 
@@ -173,9 +162,14 @@ public class PersonalManager implements ManagePersonal {
 
     @Override
     public void deleteSalesMan(int sid) {
-        this.salesmenCollection.deleteOne(
-                eq(SID, sid)
-        );
+        if (this.performanceRecordsCollection.find(eq(SID, sid)).first() != null) {
+            throw new SalesManHasPerformanceRecordsException(sid);
+        }
+        else {
+            this.salesmenCollection.deleteOne(
+                    eq(SID, sid)
+            );
+        }
     }
 
     @Override
@@ -187,6 +181,11 @@ public class PersonalManager implements ManagePersonal {
                     eq(YEAR, year)
                 )
         );
+    }
+
+    @Override
+    public void deleteAllSocialPerformanceRecords(int sid) {
+        this.performanceRecordsCollection.deleteMany(eq(SID, sid));
     }
 
 }
