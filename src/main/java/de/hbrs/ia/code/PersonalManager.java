@@ -61,9 +61,9 @@ public class PersonalManager implements ManagePersonal {
                 new CreateCollectionOptions()
                     .validationOptions(
                         new ValidationOptions()
-                                .validator(validator)
-                                .validationLevel(ValidationLevel.MODERATE)
-                                .validationAction(ValidationAction.ERROR)
+                            .validator(validator)
+                            .validationLevel(ValidationLevel.MODERATE)
+                            .validationAction(ValidationAction.ERROR)
                     )
             );
         }
@@ -89,9 +89,9 @@ public class PersonalManager implements ManagePersonal {
                 new CreateCollectionOptions()
                     .validationOptions(
                         new ValidationOptions()
-                                .validator(validator)
-                                .validationLevel(ValidationLevel.MODERATE)
-                                .validationAction(ValidationAction.ERROR)
+                            .validator(validator)
+                            .validationLevel(ValidationLevel.MODERATE)
+                            .validationAction(ValidationAction.ERROR)
                 )
             );
         }
@@ -190,11 +190,11 @@ public class PersonalManager implements ManagePersonal {
     @Override
     public void deleteSocialPerformanceRecord(int sid, int goalid, int year) {
         this.performanceRecordsCollection.deleteOne(
-                and(
-                    eq(SID, sid),
-                    eq(GOAL_ID, goalid),
-                    eq(YEAR, year)
-                )
+            and(
+                eq(SID, sid),
+                eq(GOAL_ID, goalid),
+                eq(YEAR, year)
+            )
         );
     }
 
