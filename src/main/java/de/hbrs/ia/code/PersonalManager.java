@@ -1,9 +1,5 @@
 package de.hbrs.ia.code;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static de.hbrs.ia.util.Constants.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +10,31 @@ import org.bson.Document;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.*;
+import com.mongodb.client.model.CreateCollectionOptions;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.ValidationAction;
+import com.mongodb.client.model.ValidationLevel;
+import com.mongodb.client.model.ValidationOptions;
 
-import de.hbrs.ia.exceptions.*;
+import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
+import de.hbrs.ia.exceptions.DuplicateSidException;
+import de.hbrs.ia.exceptions.SalesManHasPerformanceRecordsException;
+import de.hbrs.ia.exceptions.SidNotFoundException;
 import de.hbrs.ia.model.SalesMan;
 import de.hbrs.ia.model.SocialPerformanceRecord;
+import static de.hbrs.ia.util.Constants.ACTUAL_VALUE;
+import static de.hbrs.ia.util.Constants.DESCRIPTION;
+import static de.hbrs.ia.util.Constants.FIRST_NAME;
+import static de.hbrs.ia.util.Constants.GOAL_ID;
+import static de.hbrs.ia.util.Constants.LAST_NAME;
+import static de.hbrs.ia.util.Constants.PERFORMANCE_COLLECTION;
+import static de.hbrs.ia.util.Constants.SALESMEN_COLLECTION;
+import static de.hbrs.ia.util.Constants.SID;
+import static de.hbrs.ia.util.Constants.TARGET_VALUE;
+import static de.hbrs.ia.util.Constants.YEAR;
 
 public class PersonalManager implements ManagePersonal {
 
@@ -46,7 +62,7 @@ public class PersonalManager implements ManagePersonal {
                     .validationOptions(
                         new ValidationOptions()
                                 .validator(validator)
-                                .validationLevel(ValidationLevel.STRICT)
+                                .validationLevel(ValidationLevel.MODERATE)
                                 .validationAction(ValidationAction.ERROR)
                     )
             );
@@ -74,7 +90,7 @@ public class PersonalManager implements ManagePersonal {
                     .validationOptions(
                         new ValidationOptions()
                                 .validator(validator)
-                                .validationLevel(ValidationLevel.STRICT)
+                                .validationLevel(ValidationLevel.MODERATE)
                                 .validationAction(ValidationAction.ERROR)
                 )
             );
@@ -139,9 +155,9 @@ public class PersonalManager implements ManagePersonal {
     @Override
     public List<SalesMan> readAllSalesMen() {
         return this.salesmenCollection
-                .find()
-                .map(SalesMan::new)
-                .into(new ArrayList<>());
+            .find()
+            .map(SalesMan::new)
+            .into(new ArrayList<>());
     }
 
     @Override
@@ -167,7 +183,7 @@ public class PersonalManager implements ManagePersonal {
         }
         else {
             this.salesmenCollection.deleteOne(
-                    eq(SID, sid)
+                eq(SID, sid)
             );
         }
     }
