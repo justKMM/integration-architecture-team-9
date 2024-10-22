@@ -1,4 +1,4 @@
-package de.hbrs.ia;
+package de.hbrs.ia.code;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import de.hbrs.ia.code.PersonalManager;
 import de.hbrs.ia.exceptions.DuplicatePerformanceRecordExcpetion;
 import de.hbrs.ia.exceptions.DuplicateSidException;
 import de.hbrs.ia.exceptions.SidNotFoundException;
@@ -60,16 +59,17 @@ class PersonalManagerTest {
         SalesMan salesMan = new SalesMan("John", "Doe", 1);
         personalManager.createSalesMan(salesMan);
 
-        assertThrows(
+        Exception e = assertThrows(
             DuplicateSidException.class,
             () -> personalManager.createSalesMan(new SalesMan("Jane", "Doe", 1))
         );
+        assertEquals("A salesman with the id \"1\" already exists.", e.getMessage());
     }
 
     @Test
     public void testAddAndReadSocialPerformanceRecord() {
         SocialPerformanceRecord record = new SocialPerformanceRecord(1, "Description", 4, 3, 2023);
-        SalesMan salesMan = new SalesMan("", "", 1);
+        SalesMan salesMan = new SalesMan("John", "Doe", 1);
 
         personalManager.addSocialPerformanceRecord(record, salesMan);
 
@@ -90,7 +90,7 @@ class PersonalManagerTest {
     public void testAddAndReadSocialPerformanceRecordByYear() {
         SocialPerformanceRecord r1 = new SocialPerformanceRecord(1, "Description1", 4, 3, 2023);
         SocialPerformanceRecord r2 = new SocialPerformanceRecord(2, "Description2", 4, 4, 2024);
-        SalesMan salesMan = new SalesMan("", "", 0);
+        SalesMan salesMan = new SalesMan("John", "Doe", 0);
 
         personalManager.addSocialPerformanceRecord(r1, salesMan);
         personalManager.addSocialPerformanceRecord(r2, salesMan);
@@ -110,44 +110,49 @@ class PersonalManagerTest {
 
     @Test
     public void testAddDuplicatePerformanceRecordThrowsException() {
-        SalesMan salesMan = new SalesMan("", "", 3);
+        SalesMan salesMan = new SalesMan("John", "Doe", 3);
 
         SocialPerformanceRecord r1 = new SocialPerformanceRecord(2, "Description", 4, 4, 2024);
         SocialPerformanceRecord r2 = new SocialPerformanceRecord(2, "Description", 4, 3, 2024);
 
         personalManager.addSocialPerformanceRecord(r1, salesMan);
 
-        assertThrows(
+        Exception e = assertThrows(
             DuplicatePerformanceRecordExcpetion.class,
             () -> personalManager.addSocialPerformanceRecord(r2, salesMan)
         );
+        assertEquals(
+            "A SocialPerformanceRecord for the Salesman \"3\" with the goalId \"2\" in the year \"2024\" already exists.",
+            e.getMessage());
     }
 
     @Test
     public void testReadSalesManNotFoundThrowsException() {
-        assertThrows(
+        Exception e = assertThrows(
             SidNotFoundException.class,
             () -> personalManager.readSalesMan(999)
         );
+        assertEquals("A salesman with the id \"999\" does not exist.", e.getMessage());
     }
 
     @Test
     public void testDeleteSalesMan() {
-        SalesMan s1 = new SalesMan("", "", 2);
+        SalesMan s1 = new SalesMan("John", "Doe", 2);
 
         personalManager.createSalesMan(s1);
 
         personalManager.deleteSalesMan(s1.getId());
 
-        assertThrows(
+        Exception e = assertThrows(
             SidNotFoundException.class,
             () -> personalManager.readSalesMan(s1.getId())
         );
+        assertEquals("A salesman with the id \"2\" does not exist.", e.getMessage());
     }
 
     @Test
     public void testDeleteSocialPerformanceRecord() {
-        SalesMan salesMan = new SalesMan("", "", 1);
+        SalesMan salesMan = new SalesMan("John", "Doe", 1);
 
         SocialPerformanceRecord r1 = new SocialPerformanceRecord(1, "Description1", 5, 4, 2023);
         SocialPerformanceRecord r2 = new SocialPerformanceRecord(2, "Description2", 4, 4, 2024);
