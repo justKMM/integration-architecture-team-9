@@ -43,7 +43,7 @@ public class PersonalManager implements ManagePersonal {
 
     public PersonalManager(MongoDatabase database) {
         // Get the Collections
-        if (!collectionExists(database, SALESMEN_COLLECTION)) {
+        if (collectionDoesNotExist(database, SALESMEN_COLLECTION)) {
             Document validator = new Document(
                 "$jsonSchema",
                 new Document("bsonType", "object")
@@ -69,7 +69,7 @@ public class PersonalManager implements ManagePersonal {
         }
         this.salesmenCollection = database.getCollection(SALESMEN_COLLECTION);
 
-        if (!collectionExists(database, PERFORMANCE_COLLECTION)) {
+        if (collectionDoesNotExist(database, PERFORMANCE_COLLECTION)) {
             Document validator = new Document(
                 "$jsonSchema",
                 new Document("bsonType", "object")
@@ -95,7 +95,6 @@ public class PersonalManager implements ManagePersonal {
                 )
             );
         }
-
         this.performanceRecordsCollection = database.getCollection(PERFORMANCE_COLLECTION);
 
         // Set up indexes
@@ -113,11 +112,11 @@ public class PersonalManager implements ManagePersonal {
         );
     }
 
-    private boolean collectionExists(MongoDatabase database, String collectionName) {
+    private boolean collectionDoesNotExist(MongoDatabase database, String collectionName) {
         return database.listCollectionNames()
             .into(new ArrayList<>())
             .stream()
-            .anyMatch(name -> name.equalsIgnoreCase(collectionName));
+            .noneMatch(name -> name.equalsIgnoreCase(collectionName));
     }
 
     @Override
